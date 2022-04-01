@@ -1,0 +1,185 @@
+.stopwatch-container {
+  margin-bottom: 1rem;
+}
+
+#stopwatches-container {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-weight: normal;
+  text-shadow: 0px 0px 3px rgb(255, 255, 255);
+}
+
+body {
+  color: white;
+  background-color: black;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+.stopwatch-name {
+  color: rgb(192, 192, 192);
+  padding-bottom: 0.25rem;
+  /* font-size: 90%; */
+}
+
+.stopwatch-time {
+  font-size: xx-large;
+  text-shadow: 0px 0px 15px rgb(255, 255, 255);
+}
+
+.stopwatch-timeandactions {
+  display: flex;
+  flex-direction: column;
+}
+
+.stopwatch-actions {
+  display: flex;
+  padding-top: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.stopwatch-startstop::before {
+  content: 'Start';
+}
+
+.stopwatch-startstop.running::before {
+  content: 'Stop';
+}
+
+.stopwatch-startstop {
+  border-color: lime;
+  box-shadow: 0px 0px 5px lime;
+  color: white;
+  width: 4rem;
+}
+
+.stopwatch-startstop:hover {
+  background-color: rgba(0, 255, 0, 0.2);
+  color: white;
+  width: 4rem;
+}
+
+.stopwatch-startstop.running {
+  border-color: red;
+  box-shadow: 0px 0px 5px red;
+  color: white;
+}
+
+.stopwatch-startstop.running:hover {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: white;
+}
+
+.stopwatch-action {
+  margin-right: 1rem;
+}
+
+button, input[type="submit"] {
+  border-color: rgb(236, 236, 236);
+  border-style: solid;
+  border-width: 1.5px;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 1rem;
+  padding: 0.25rem 1rem;
+  cursor: pointer;
+  color: white;
+  transition-property: all;
+  transition-duration: 0.2s;
+  box-shadow: 0px 0px 5px white;
+}
+
+button:hover, input[type="submit"]:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+#app-container {
+  display: none;
+}
+
+#auth-google {
+  background: url('./google_signin_buttons/btn_google_signin_light_normal_web.png') transparent 50% no-repeat;
+  padding: 0px;
+  border-radius: 0px;
+  border: none;
+  border-width: 0px;
+  width: 190px;
+  height: 60px;
+  margin-bottom: 1.5rem;
+  box-shadow: none;
+}
+
+#auth-google:focus {
+  background: url('./google_signin_buttons/btn_google_signin_light_focus_web.png') transparent 50% no-repeat;
+}
+
+#auth-google:active {
+  background: url('./google_signin_buttons/btn_google_signin_light_pressed_web.png') transparent 50% no-repeat;
+}
+
+#auth-container {
+  display: flex;
+  flex-direction: column;
+}
+
+input:not(input[type="submit"]) {
+  display: block;
+  max-width: 300px;
+  padding: 0.5rem;
+  margin: 0 0.2rem;
+  border: none;
+  border-radius: 0.3rem;
+  margin-bottom: 1rem;
+  margin-left: 0.25rem;
+  box-shadow: 0px 0px 5px white;
+  background-color: black;
+  color: white;
+  border-color: white;
+  border-width: 1.5px;
+  border-style: solid;
+}
+
+label {
+  color: rgb(228, 228, 228);
+  margin-bottom: 0.1rem;
+}
+
+input:focus {
+  border: none;
+  outline: none;
+}
+
+*:focus {
+  outline: none;
+}
+
+#setname-prompt {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  align-items: center;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 200ms;
+}
+
+#setname-prompt .container {
+  background-color: rgb(0, 0, 0);
+  border-radius: 10px;
+  padding: 20px;
+  height: fit-content;
+  box-shadow: 0px 0px 5px white;
+}
+
+#create-stopwatch {
+  margin-right: 10px;
+}
+
+#auth-signin {
+  margin-right: 10px;
+}
