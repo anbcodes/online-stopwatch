@@ -183,3 +183,8 @@ input:focus {
 #auth-signin {
   margin-right: 10px;
 }
+
+#issue {
+  color:rgb(172, 172, 172);
+  margin-top: 4rem;
+}
