@@ -11,6 +11,7 @@ import {
   createStopwatch,
   makeStopwatch,
   namePrompt,
+  setClock,
   stopwatchContainer,
 } from "./elements.ts";
 import { getUser, init, onLogin, onLogout } from "./auth.ts";
@@ -37,8 +38,19 @@ const db = getFirestore();
 
 const usersCollection = collection(db, "user");
 
+interface AppData {
+  stopwatches: Stopwatch[];
+  clockIp?: string;
+}
+
+let appData: AppData = { stopwatches: [] };
+
 let userDoc: null | ReturnType<typeof doc> = null;
 let unsubFromUserDoc: null | ReturnType<typeof onSnapshot> = null;
+
+const save = () => {
+  setDoc(userDoc, appData);
+};
 
 onLogin((user) => {
   userDoc = doc(usersCollection, user.uid);
@@ -77,14 +89,12 @@ let stopwatches: {
   el: ReturnType<typeof makeStopwatch>;
 }[] = [];
 
-let serverStopwatchs: Stopwatch[] | null = null;
-
 const updateStopwatches = (doc: any) => {
   const data = doc.data();
   if (!data) return;
   stopwatchContainer.innerHTML = "";
   stopwatches = [];
-  serverStopwatchs = data.stopwatches;
+  appData = data;
   data.stopwatches.forEach((stopwatch: Stopwatch) => {
     const stopwatchEl = makeStopwatch();
     stopwatchContainer.appendChild(stopwatchEl.container);
@@ -101,25 +111,53 @@ const updateStopwatches = (doc: any) => {
         stopwatch.startTime = +new Date();
         stopwatch.running = true;
         stopwatchEl.startStopBtn.classList.add("running");
+        if (appData.clockIp) {
+          fetch(
+            `http://${appData.clockIp}/stopwatch/start-time?v=${
+              stopwatch.startTime - stopwatch.prevTime
+            }`,
+            { method: "POST" },
+          );
+
+          fetch(`http://${appData.clockIp}/mode?v=stopwatch`, {
+            method: "POST",
+          });
+
+          fetch(
+            `http://${appData.clockIp}/show-ms?v=true`,
+            { method: "POST" },
+          );
+        }
       } else {
         stopwatch.prevTime += +new Date() - stopwatch.startTime;
         stopwatch.running = false;
         stopwatchEl.startStopBtn.classList.remove("running");
+
+        if (appData.clockIp) {
+          fetch(
+            `http://${appData.clockIp}/show-ms?v=false`,
+            { method: "POST" },
+          );
+
+          fetch(`http://${appData.clockIp}/mode?v=clock`, {
+            method: "POST",
+          });
+        }
       }
-      setDoc(userDoc, { stopwatches: data.stopwatches });
+      save();
     });
 
     stopwatchEl.resetBtn.addEventListener("click", () => {
       stopwatch.prevTime = 0;
       stopwatch.startTime = 0;
       stopwatch.running = false;
-      setDoc(userDoc, { stopwatches: data.stopwatches });
+      save();
     });
 
     stopwatchEl.deleteBtn.addEventListener("click", () => {
-      setDoc(userDoc, {
-        stopwatches: data.stopwatches.filter((v: Stopwatch) => v !== stopwatch),
-      });
+      appData.stopwatches = appData.stopwatches.filter((v: Stopwatch) =>
+        v !== stopwatch
+      ), save();
     });
 
     stopwatchEl.setNameBtn.addEventListener("click", () => {
@@ -129,7 +167,7 @@ const updateStopwatches = (doc: any) => {
 
       const onSubmit = () => {
         stopwatch.name = namePrompt.input.value;
-        setDoc(userDoc, { stopwatches: data.stopwatches });
+        save();
         stopwatchEl.name.textContent = stopwatch.name;
         removeAll();
       };
@@ -186,19 +224,69 @@ const render = () => {
 requestAnimationFrame(render);
 
 createStopwatch.addEventListener("click", () => {
-  if (!serverStopwatchs && getUser()) {
-    serverStopwatchs = [];
+  if (!appData.stopwatches && getUser()) {
+    appData.stopwatches = [];
   }
 
-  if (serverStopwatchs) {
-    serverStopwatchs.push({
+  if (appData.stopwatches) {
+    appData.stopwatches.push({
       prevTime: 0,
       startTime: 0,
       running: false,
       name: "New stopwatch",
     });
-    setDoc(userDoc, { stopwatches: serverStopwatchs });
+    save();
   }
 });
 
 console.log("Hello");
+
+setClock.addEventListener("click", () => {
+  const label = namePrompt.container.querySelector("label");
+  if (!label) {
+    throw new Error("No label");
+  }
+
+  label.textContent = "Ip";
+
+  namePrompt.container.style.display = "flex";
+  namePrompt.container.style.opacity = "100%";
+  namePrompt.input.focus();
+
+  const onSubmit = () => {
+    appData.clockIp = namePrompt.input.value;
+    save();
+    removeAll();
+  };
+
+  const inputListener = (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      onSubmit();
+      namePrompt.input.removeEventListener("keydown", inputListener);
+    }
+    if (e.key === "Escape") {
+      removeAll();
+    }
+  };
+
+  const removeAll = () => {
+    namePrompt.submit.removeEventListener("click", onSubmit);
+    namePrompt.input.removeEventListener("keydown", inputListener);
+    namePrompt.container.removeEventListener("click", removeAll);
+    removeEventListener("keydown", inputListener);
+
+    namePrompt.container.style.opacity = "0";
+    setTimeout(() => {
+      namePrompt.container.style.display = "none";
+    }, 200);
+    label.textContent = "Name";
+
+    namePrompt.input.value = "";
+  };
+
+  addEventListener("keydown", inputListener);
+
+  namePrompt.submit.addEventListener("click", onSubmit);
+  namePrompt.input.addEventListener("keydown", inputListener);
+  namePrompt.container.addEventListener("click", removeAll);
+});

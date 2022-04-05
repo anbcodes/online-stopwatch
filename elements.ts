@@ -52,3 +52,5 @@ export const namePrompt = {
   container: ensure<HTMLDivElement>("#setname-prompt"),
   card: ensure<HTMLDivElement>("#setname-prompt .container"),
 };
+
+export const setClock = ensure<HTMLButtonElement>("#set-clock");

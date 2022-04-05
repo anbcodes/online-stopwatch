@@ -188,3 +188,7 @@ input:focus {
   color:rgb(172, 172, 172);
   margin-top: 4rem;
 }
+
+#set-clock {
+  margin-left: 10px;
+}
