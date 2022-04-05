@@ -113,18 +113,18 @@ const updateStopwatches = (doc: any) => {
         stopwatchEl.startStopBtn.classList.add("running");
         if (appData.clockIp) {
           fetch(
-            `http://${appData.clockIp}/stopwatch/start-time?v=${
+            `https://${appData.clockIp}/stopwatch/start-time?v=${
               stopwatch.startTime - stopwatch.prevTime
             }`,
             { method: "POST" },
           );
 
-          fetch(`http://${appData.clockIp}/mode?v=stopwatch`, {
+          fetch(`https://${appData.clockIp}/mode?v=stopwatch`, {
             method: "POST",
           });
 
           fetch(
-            `http://${appData.clockIp}/show-ms?v=true`,
+            `https://${appData.clockIp}/show-ms?v=true`,
             { method: "POST" },
           );
         }
@@ -135,11 +135,11 @@ const updateStopwatches = (doc: any) => {
 
         if (appData.clockIp) {
           fetch(
-            `http://${appData.clockIp}/show-ms?v=false`,
+            `https://${appData.clockIp}/show-ms?v=false`,
             { method: "POST" },
           );
 
-          fetch(`http://${appData.clockIp}/mode?v=clock`, {
+          fetch(`https://${appData.clockIp}/mode?v=clock`, {
             method: "POST",
           });
         }
